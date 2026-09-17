@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสร้างชุดเบิกพัสดุ (ซื้อ/จ้าง) - ศูนย์การศึกษาพิเศษ ประจำจังหวัดสุโขทัย</title>
+  <!-- Google Fonts Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-brand-800 to-brand-600 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center border border-white/20 text-xl font-bold">
+          ศกศ
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-display font-bold leading-tight tracking-wide">ระบบสร้างชุดเบิกพัสดุ (ซื้อ / จ้าง)</h1>
+          <p class="text-xs text-blue-100 font-light">ศูนย์การศึกษาพิเศษ ประจำจังหวัดสุโขทัย • เอกสาร 6 หน้ามาตรฐาน</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button type="button" id="btnOpenDrafts" class="px-3.5 py-1.5 bg-white/15 hover:bg-white/25 active:scale-95 text-xs sm:text-sm font-medium rounded-lg border border-white/20 transition flex items-center gap-1.5">
+          <span>📋</span> ประวัติชุดเบิก
+        </button>
+        <button type="button" id="btnOpenVendors" class="px-3.5 py-1.5 bg-white/15 hover:bg-white/25 active:scale-95 text-xs sm:text-sm font-medium rounded-lg border border-white/20 transition flex items-center gap-1.5">
+          <span>🏪</span> รายชื่อร้านค้า
+        </button>
+        <button type="button" id="btnResetForm" class="px-3 py-1.5 bg-rose-500/80 hover:bg-rose-600 text-xs sm:text-sm font-medium rounded-lg transition active:scale-95 flex items-center gap-1">
+          <span>🔄</span> ล้างฟอร์ม
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Form Container -->
+    <form id="procurementForm" class="space-y-6">
+
+      <!-- Section 1: ประเภทเอกสาร & ผู้อนุมัติ -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">1</span>
+            ประเภทเอกสารและผู้อนุมัติ
+          </h2>
+          <span class="text-xs text-slate-500">เลือกประเภทเพื่อจัดฟอร์มและผู้ลงนามให้ตรงตามระเบียบ</span>
+        </div>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- ประเภทงาน -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">ประเภทการจัดหา <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative flex items-center p-3.5 rounded-lg border cursor-pointer select-none transition border-brand-500 bg-brand-50/50 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:ring-2 has-[:checked]:ring-brand-500/20">
+                <input type="radio" name="doc_type" value="buy" checked class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                <div class="ml-3">
+                  <span class="block text-sm font-bold text-slate-800">จัดซื้อพัสดุ (ซื้อ)</span>
+                  <span class="block text-xs text-slate-500">วัสดุ, สิ่งของ, อุปกรณ์, ดิน, ต้นไม้</span>
+                </div>
+              </label>
+              <label class="relative flex items-center p-3.5 rounded-lg border cursor-pointer select-none transition border-slate-200 hover:border-slate-300 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:ring-2 has-[:checked]:ring-brand-500/20">
+                <input type="radio" name="doc_type" value="hire" class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                <div class="ml-3">
+                  <span class="block text-sm font-bold text-slate-800">จัดจ้างพัสดุ (จ้าง)</span>
+                  <span class="block text-xs text-slate-500">ไวนิล, สติ๊กเกอร์, อาหาร, รถ, วิทยากร</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- ผู้อนุมัติ -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">ผู้มีอำนาจอนุมัติ <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative flex items-center p-3.5 rounded-lg border cursor-pointer select-none transition border-brand-500 bg-brand-50/50 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:ring-2 has-[:checked]:ring-brand-500/20">
+                <input type="radio" name="approver_type" value="director" checked class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                <div class="ml-3">
+                  <span class="block text-sm font-bold text-slate-800">ผู้อำนวยการ (ผอ.)</span>
+                  <span class="block text-xs text-slate-500">นายประวิทย์ เรืองเดช</span>
+                </div>
+              </label>
+              <label class="relative flex items-center p-3.5 rounded-lg border cursor-pointer select-none transition border-slate-200 hover:border-slate-300 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:ring-2 has-[:checked]:ring-brand-500/20">
+                <input type="radio" name="approver_type" value="deputy" class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                <div class="ml-3">
+                  <span class="block text-sm font-bold text-slate-800">รอง ผอ. (รักษาการ)</span>
+                  <span class="block text-xs text-slate-500">ว่าที่ร้อยตรี อดิศักดิ์ บัวดี</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: ข้อมูลโครงการและหน่วยงานผู้ขอ -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">2</span>
+            ข้อมูลโครงการและหน่วยงานผู้ขอ
+          </h2>
+        </div>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-12 gap-5">
+          <!-- กลุ่มงาน / ฝ่าย / หน่วยบริการ -->
+          <div class="md:col-span-5">
+            <label class="block text-sm font-semibold text-slate-700 mb-1">กลุ่มงาน / ฝ่าย / หน่วยบริการผู้ขอ <span class="text-red-500">*</span></label>
+            <input list="departmentList" id="department" name="department" required placeholder="เลือกหรือพิมพ์ชื่อกลุ่มงาน/หน่วยบริการ" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+            <datalist id="departmentList"></datalist>
+          </div>
+
+          <!-- ชื่องานที่จะจ้าง (แสดงเฉพาะกรณีเลือก "จ้าง") -->
+          <div class="md:col-span-7" id="hireJobWrapper" style="display: none;">
+            <label class="block text-sm font-semibold text-slate-700 mb-1">ชื่องานที่จะจ้าง (เฉพาะงานจ้าง) <span class="text-red-500">*</span></label>
+            <input type="text" id="hire_job_name" name="hire_job_name" placeholder="เช่น ทำป้ายไวนิล, เหมาบริการรถยนต์โดยสาร, ซ่อมเครื่องตัดหญ้า, อาหารว่าง" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+            <p class="text-xs text-slate-400 mt-1">คำนี้จะถูกนำไปแทนที่ข้อความ 'ทำป้ายไวนิล' ในรายงานขอจ้าง ใบสั่งจ้าง และใบตรวจรับ</p>
+          </div>
+
+          <!-- เหตุผลความจำเป็น / ชื่องาน / โครงการ -->
+          <div class="md:col-span-12">
+            <label class="block text-sm font-semibold text-slate-700 mb-1">เหตุผลความจำเป็น / เพื่อใช้สำหรับโครงการ <span class="text-red-500">*</span></label>
+            <input type="text" id="project_name" name="project_name" required placeholder="เช่น กิจกรรมชุมนุม, โครงการศิลปะบำบัดสำหรับเด็ก, ปรับปรุงภูมิทัศน์ศูนย์การศึกษาพิเศษฯ" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: วันที่และเลขที่หนังสือราชการ -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-visible relative z-10">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">3</span>
+            วันที่และเลขที่หนังสือราชการ
+          </h2>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btnAutoCalcDates" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-95 flex items-center gap-1.5">
+              <span>⚡</span> คำนวณวันทำการอัตโนมัติ (ข้ามเสาร์-อาทิตย์ & วันหยุด)
+            </button>
+          </div>
+        </div>
+        <div class="p-5 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            <!-- 1. วันที่ขอซื้อ/จ้าง -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                1. วันที่บันทึกรายงานขอ <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="doc1_date" name="doc1_date" required placeholder="เช่น 30 กรกฎาคม 2569 หรือ 30072569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_doc1_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- เลขที่บันทึก 1 -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                เลขที่บันทึกรายงานขอ (ศธ ๐๔๐๐๗.๗๔๐/...) <span class="text-red-500">*</span>
+              </label>
+              <div class="flex items-center">
+                <span class="px-2.5 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg text-xs text-slate-500 select-none">ศธ ๐๔๐๐๗.๗๔๐/</span>
+                <input type="text" id="doc1_no" name="doc1_no" required placeholder="เช่น 2912 (รันเลข 2, 3 ให้ auto)" class="w-full px-3 py-2 border border-slate-300 rounded-r-lg text-sm focus:ring-2 focus:ring-brand-500">
+              </div>
+            </div>
+
+            <!-- กำหนดส่งมอบภายใน (วัน) -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                กำหนดส่งมอบภายใน (วัน) <span class="text-red-500">*</span>
+              </label>
+              <input type="number" id="delivery_days" name="delivery_days" value="5" min="1" max="90" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <!-- 2. วันที่อนุมัติสั่ง -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                2. วันที่อนุมัติสั่ง <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="doc2_date" name="doc2_date" required placeholder="เช่น 31 กรกฎาคม 2569 หรือ 31072569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_doc2_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- เลขที่บันทึก 2 -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                เลขที่บันทึกรายงานผลอนุมัติสั่ง <span class="text-red-500">*</span>
+              </label>
+              <div class="flex items-center">
+                <span class="px-2.5 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg text-xs text-slate-500 select-none">ศธ ๐๔๐๐๗.๗๔๐/</span>
+                <input type="text" id="doc2_no" name="doc2_no" required placeholder="เช่น 2913" class="w-full px-3 py-2 border border-slate-300 rounded-r-lg text-sm focus:ring-2 focus:ring-brand-500">
+              </div>
+            </div>
+
+            <!-- คำอธิบายช่วย -->
+            <div class="hidden md:flex items-center text-xs text-slate-400 italic px-2">
+              (วันที่อนุมัติสั่งและวันใบสั่ง Auto จากวันขอ 1 วันทำการ และแยกแก้ไขได้อิสระ)
+            </div>
+
+            <!-- 3. วันที่ใบสั่งซื้อ / สั่งจ้าง -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                3. วันที่ใบสั่งซื้อ / สั่งจ้าง <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="po_date" name="po_date" required placeholder="เช่น 31 กรกฎาคม 2569 หรือ 31072569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_po_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- เลขที่ใบสั่งซื้อ/จ้าง -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                เลขที่ใบสั่งซื้อ / สั่งจ้าง <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="po_no" name="po_no" required placeholder="เช่น 91/2569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <!-- 4. วันครบกำหนดส่งมอบ -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                4. วันครบกำหนดส่งมอบตามใบสั่ง (Auto นับจากวันสั่ง) <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="delivery_due_date" name="delivery_due_date" required placeholder="เช่น 5 สิงหาคม 2569 หรือ 05082569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_delivery_due_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- 5. วันที่ส่งมอบจริง & วันตรวจรับ -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                5. วันที่ตรวจรับงาน & วันที่ใบเสร็จ <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="delivery_actual_date" name="delivery_actual_date" required placeholder="เช่น 5 สิงหาคม 2569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_delivery_actual_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- 6. วันที่ขออนุมัติจ่ายเงิน -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                6. วันที่บันทึกขออนุมัติจ่ายเงิน <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="doc3_date" name="doc3_date" required placeholder="เช่น 10 สิงหาคม 2569" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 date-input">
+              <div id="warn_doc3_date" class="mt-1 text-xs font-medium hidden"></div>
+            </div>
+
+            <!-- เลขที่บันทึก 3 -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                เลขที่บันทึกขออนุมัติจ่ายเงิน <span class="text-red-500">*</span>
+              </label>
+              <div class="flex items-center">
+                <span class="px-2.5 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg text-xs text-slate-500 select-none">ศธ.04007.740/</span>
+                <input type="text" id="doc3_no" name="doc3_no" required placeholder="เช่น 2914" class="w-full px-3 py-2 border border-slate-300 rounded-r-lg text-sm focus:ring-2 focus:ring-brand-500">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: ข้อมูลผู้ขาย / ผู้รับจ้าง & ใบเสร็จ -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-visible relative z-10">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">4</span>
+            ข้อมูลผู้ขาย / ผู้รับจ้าง และเอกสารส่งมอบ
+          </h2>
+          <div class="flex items-center gap-2">
+            <select id="vendorSelect" class="px-3 py-1.5 bg-white border border-slate-300 text-xs font-medium rounded-lg shadow-sm focus:ring-brand-500">
+              <option value="">-- เลือกร้านค้าที่บันทึกไว้ --</option>
+            </select>
+            <button type="button" id="btnSaveCurrentVendor" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg shadow-sm transition active:scale-95 flex items-center gap-1">
+              <span>💾</span> บันทึกร้านนี้
+            </button>
+          </div>
+        </div>
+        <div class="p-5 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4">
+            <!-- ชื่อร้าน -->
+            <div class="md:col-span-5">
+              <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อร้านค้า / บริษัท / ผู้รับจ้าง <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_name" name="vendor_name" required placeholder="เช่น ห้างหุ้นส่วนจำกัด น้ำฝน" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <!-- เลขประจำตัวผู้เสียภาษี -->
+            <div class="md:col-span-4">
+              <label class="block text-sm font-medium text-slate-700 mb-1">เลขประจำตัวผู้เสียภาษี (13 หลัก) <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_tax_id" name="vendor_tax_id" required placeholder="เช่น 0643567000041" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 font-mono">
+            </div>
+
+            <!-- เบอร์โทร -->
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium text-slate-700 mb-1">โทรศัพท์</label>
+              <input type="text" id="vendor_phone" name="vendor_phone" placeholder="เช่น 082-0071206 หรือ -" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 font-mono">
+            </div>
+
+            <!-- ที่อยู่ (เลขที่, หมู่, ซอย, ถนน) -->
+            <div class="md:col-span-4">
+              <label class="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ (เลขที่, หมู่, ซอย, ถนน) <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_address" name="vendor_address" required placeholder="เช่น เลขที่ 334 หมู่ 8" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <!-- จังหวัด (dropdown 77 จังหวัด) -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-1">จังหวัด <span class="text-red-500">*</span></label>
+              <select id="vendor_province" name="vendor_province" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                <option value="">-- เลือกจังหวัด --</option>
+              </select>
+            </div>
+
+            <!-- อำเภอ/เขต (dropdown กรองตามจังหวัด) -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-1">อำเภอ/เขต <span class="text-red-500">*</span></label>
+              <select id="vendor_district" name="vendor_district" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                <option value="">-- เลือกอำเภอ --</option>
+              </select>
+            </div>
+
+            <!-- ตำบล/แขวง (dropdown กรองตามอำเภอ) -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-1">ตำบล/แขวง <span class="text-red-500">*</span></label>
+              <select id="vendor_subdistrict" name="vendor_subdistrict" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                <option value="">-- เลือกตำบล --</option>
+              </select>
+            </div>
+
+            <!-- รหัสไปรษณีย์ (auto-fill) -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-1">รหัสไปรษณีย์ <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_zipcode" name="vendor_zipcode" required placeholder="64150" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 font-mono">
+            </div>
+
+            <!-- ผู้ลงนามของร้านค้า -->
+            <div class="md:col-span-6">
+              <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้ลงนามของผู้ขาย/ผู้รับจ้าง <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_signer_name" name="vendor_signer_name" required placeholder="เช่น นางสาวแพรพลอย  ขวัญนาค" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div class="md:col-span-6">
+              <label class="block text-sm font-medium text-slate-700 mb-1">ตำแหน่งของผู้ลงนาม <span class="text-red-500">*</span></label>
+              <input type="text" id="vendor_signer_position" name="vendor_signer_position" value="เจ้าของกิจการ" placeholder="เช่น เจ้าของกิจการ, ผู้รับจ้าง, ผู้จัดการ" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <!-- ข้อมูลใบเสร็จรับเงิน / เอกสารส่งมอบ -->
+          <div class="pt-3 border-t border-slate-200">
+            <h3 class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+              <span>🧾</span> รายละเอียดเอกสารส่งมอบ / ใบเสร็จรับเงิน
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">ประเภทเอกสารส่งมอบ</label>
+                <select id="receipt_type" name="receipt_type" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-brand-500">
+                  <option value="ใบเสร็จรับเงิน">ใบเสร็จรับเงิน</option>
+                  <option value="ใบสำคัญรับเงิน">ใบสำคัญรับเงิน</option>
+                  <option value="ใบส่งของ">ใบส่งของ</option>
+                  <option value="หนังสือส่งมอบ">หนังสือส่งมอบ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">เล่มที่</label>
+                <input type="text" id="receipt_book_no" name="receipt_book_no" value="-" placeholder="เช่น 5 หรือ -" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-brand-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">เลขที่</label>
+                <input type="text" id="receipt_no" name="receipt_no" value="-" placeholder="เช่น 230 หรือ -" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-brand-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">ลงวันที่</label>
+                <input type="text" id="receipt_date" name="receipt_date" placeholder="จะใช้วันที่ตรวจรับหากเว้นว่าง" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-brand-500 date-input">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: คณะกรรมการตรวจรับและเจ้าหน้าที่ผู้ลงนาม -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-visible relative z-20">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">5</span>
+            คณะกรรมการตรวจรับและผู้ลงนาม
+          </h2>
+        </div>
+        <div class="p-5 space-y-4">
+          <!-- กรรมการ 3 ท่าน -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- ประธานกรรมการ -->
+            <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5 relative">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">ประธานกรรมการ</span>
+                <select id="staffSelect1" class="text-xs border border-slate-300 rounded px-1.5 py-0.5 staff-dropdown">
+                  <option value="">เลือกด่วน...</option>
+                </select>
+              </div>
+              <div class="relative autocomplete-container">
+                <label class="block text-xs text-slate-500 mb-0.5">ชื่อ-นามสกุล <span class="text-red-500">*</span> <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+                <input type="text" id="c1_name" name="c1_name" required value="นายอานนท์  เขียวแก้ว" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500 staff-autocomplete-input">
+                <div id="c1_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-0.5">ตำแหน่ง <span class="text-red-500">*</span></label>
+                <input type="text" id="c1_pos" name="c1_pos" required value="ครู" class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500">
+              </div>
+            </div>
+
+            <!-- กรรมการ 1 -->
+            <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5 relative">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-700 bg-slate-200 px-2 py-0.5 rounded">กรรมการคนที่ 1</span>
+                <select id="staffSelect2" class="text-xs border border-slate-300 rounded px-1.5 py-0.5 staff-dropdown">
+                  <option value="">เลือกด่วน...</option>
+                </select>
+              </div>
+              <div class="relative autocomplete-container">
+                <label class="block text-xs text-slate-500 mb-0.5">ชื่อ-นามสกุล <span class="text-red-500">*</span> <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+                <input type="text" id="c2_name" name="c2_name" required value="นางสาวธัญลักษณ์  มาลัย" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500 staff-autocomplete-input">
+                <div id="c2_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-0.5">ตำแหน่ง <span class="text-red-500">*</span></label>
+                <input type="text" id="c2_pos" name="c2_pos" required value="ครู" class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500">
+              </div>
+            </div>
+
+            <!-- กรรมการ 2 -->
+            <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5 relative">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-700 bg-slate-200 px-2 py-0.5 rounded">กรรมการคนที่ 2</span>
+                <select id="staffSelect3" class="text-xs border border-slate-300 rounded px-1.5 py-0.5 staff-dropdown">
+                  <option value="">เลือกด่วน...</option>
+                </select>
+              </div>
+              <div class="relative autocomplete-container">
+                <label class="block text-xs text-slate-500 mb-0.5">ชื่อ-นามสกุล <span class="text-red-500">*</span> <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+                <input type="text" id="c3_name" name="c3_name" required value="นางสาวโสรยา  อินพรม" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500 staff-autocomplete-input">
+                <div id="c3_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-0.5">ตำแหน่ง <span class="text-red-500">*</span></label>
+                <input type="text" id="c3_pos" name="c3_pos" required value="ครู" class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-brand-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- เจ้าหน้าที่ประจำตำแหน่ง -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div class="relative autocomplete-container">
+              <label class="block text-xs text-slate-600 mb-1">เจ้าหน้าที่พัสดุ <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+              <input type="text" id="officer_supplies" name="officer_supplies" value="นายภาณุพงศ์  อัมพรภาค" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm bg-white focus:ring-brand-500 staff-autocomplete-input">
+              <div id="officer_supplies_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+            </div>
+            <div class="relative autocomplete-container">
+              <label class="block text-xs text-slate-600 mb-1">หัวหน้าเจ้าหน้าที่พัสดุ <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+              <input type="text" id="head_supplies" name="head_supplies" value="อดิศักดิ์  บัวดี" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm bg-white focus:ring-brand-500 staff-autocomplete-input">
+              <div id="head_supplies_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+            </div>
+            <div class="relative autocomplete-container">
+              <label class="block text-xs text-slate-600 mb-1">เจ้าหน้าที่การเงิน <span class="text-[10px] text-brand-600 font-normal">(พิมพ์เพื่อค้นหา)</span></label>
+              <input type="text" id="finance_officer" name="finance_officer" value="นางสาวอังคณา  เสถียรดี" autocomplete="off" placeholder="พิมพ์ชื่อ เช่น ป..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm bg-white focus:ring-brand-500 staff-autocomplete-input">
+              <div id="finance_officer_suggestions" class="suggestion-list absolute left-0 right-0 top-full mt-1 max-h-52 overflow-y-auto hidden"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: ตารางรายการพัสดุ / งานจ้าง -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-slate-100/70 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+          <h2 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs">6</span>
+            รายการพัสดุ / บริการที่จัดซื้อจัดจ้าง
+          </h2>
+          <button type="button" id="btnAddItem" class="px-3.5 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-95 flex items-center gap-1">
+            <span>+</span> เพิ่มรายการ
+          </button>
+        </div>
+        <div class="p-5 space-y-4">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm" id="itemsTable">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 text-xs">
+                  <th class="py-2.5 px-3 w-12 text-center">ลำดับ</th>
+                  <th class="py-2.5 px-3">รายละเอียดของพัสดุที่จะซื้อ/จ้าง <span class="text-red-500">*</span></th>
+                  <th class="py-2.5 px-3 w-28 text-center">จำนวน <span class="text-red-500">*</span></th>
+                  <th class="py-2.5 px-3 w-28 text-center">หน่วยนับ <span class="text-red-500">*</span></th>
+                  <th class="py-2.5 px-3 w-36 text-right">ราคาต่อหน่วย (บาท) <span class="text-red-500">*</span></th>
+                  <th class="py-2.5 px-3 w-36 text-right">จำนวนเงิน (บาท)</th>
+                  <th class="py-2.5 px-2 w-10 text-center">ลบ</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody" class="divide-y divide-slate-100">
+                <!-- Dynamic rows populated via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Summary & Tax Calculation Box -->
+          <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mt-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <!-- Toggles: VAT and Withholding Tax -->
+              <div class="md:col-span-6 space-y-3">
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
+                  <div>
+                    <span class="text-sm font-semibold text-slate-800 block">ภาษีมูลค่าเพิ่ม (VAT 7%)</span>
+                    <span class="text-xs text-slate-500">สำหรับใบกำกับภาษีเต็มรูป ถอด VAT อัตโนมัติ</span>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="has_vat" name="has_vat" class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
+                  <div>
+                    <span class="text-sm font-semibold text-slate-800 block">หักภาษีเงินได้ ณ ที่จ่าย 1%</span>
+                    <span class="text-xs text-slate-500">สำหรับงานจ้าง/บริการ หักภาษี 1% จากยอดก่อน VAT</span>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="has_withholding_tax" name="has_withholding_tax" class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                  </label>
+                </div>
+
+                <div class="flex items-center gap-3 px-3 py-2 bg-white rounded-lg border border-slate-200">
+                  <label class="text-xs font-semibold text-slate-600 whitespace-nowrap">ค่าปรับ (บาท):</label>
+                  <input type="number" id="fine_amount" name="fine_amount" value="0" min="0" step="0.01" class="w-full px-2.5 py-1 text-sm border border-slate-300 rounded focus:ring-brand-500">
+                </div>
+              </div>
+
+              <!-- Financial Totals -->
+              <div class="md:col-span-6 bg-white p-4 rounded-lg border border-slate-200 space-y-2 text-sm">
+                <div class="flex justify-between text-slate-600">
+                  <span>มูลค่าสินค้า / บริการ:</span>
+                  <span id="dispGoodsValue" class="font-mono font-medium text-slate-800">0.00 บาท</span>
+                </div>
+                <div class="flex justify-between text-slate-600" id="rowVat">
+                  <span>ภาษีมูลค่าเพิ่ม (7%):</span>
+                  <span id="dispVat" class="font-mono font-medium text-slate-800">-</span>
+                </div>
+                <div class="flex justify-between text-slate-600 border-t pt-1.5">
+                  <span class="font-semibold">จำนวนเงินที่ขอเบิก:</span>
+                  <span id="dispTotalAmount" class="font-mono font-bold text-slate-900 text-base">0.00 บาท</span>
+                </div>
+                <div class="flex justify-between text-slate-600" id="rowWht">
+                  <span>หักภาษีเงินได้ ณ ที่จ่าย:</span>
+                  <span id="dispWht" class="font-mono font-medium text-rose-600">-</span>
+                </div>
+                <div class="flex justify-between text-slate-600" id="rowFine">
+                  <span>ค่าปรับ:</span>
+                  <span id="dispFine" class="font-mono font-medium text-rose-600">-</span>
+                </div>
+                <div class="flex justify-between text-brand-700 font-bold border-t border-dashed border-slate-300 pt-2 text-base">
+                  <span>คงเหลือจ่ายจริง:</span>
+                  <span id="dispNetPay" class="font-mono text-lg text-emerald-700">0.00 บาท</span>
+                </div>
+                <div class="bg-brand-50 text-brand-800 px-3 py-1.5 rounded text-xs mt-1 text-center font-medium border border-brand-200/60">
+                  คำอ่าน: <span id="dispBahtText" class="font-bold">ศูนย์บาทถ้วน</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons Bar -->
+      <div class="sticky bottom-4 z-30 bg-white/95 backdrop-blur shadow-lg rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button type="button" id="btnSaveDraft" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl border border-slate-300 transition active:scale-95 flex items-center gap-2">
+            <span>💾</span> บันทึกแบบร่าง
+          </button>
+          <button type="button" id="btnPreview" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl border border-slate-300 transition active:scale-95 flex items-center gap-2">
+            <span>👁️</span> ดูสรุปข้อมูล
+          </button>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="text-right hidden sm:block">
+            <span class="text-xs text-slate-500 block">เอกสารสมบูรณ์ 6 หน้า</span>
+            <span class="text-xs font-semibold text-emerald-600">พร้อมส่งออกฟอร์แมตเดิม 100%</span>
+          </div>
+          <button type="submit" id="btnExport" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-base font-display font-bold rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-2">
+            <span>📥</span>
+            <span>Export Word (.docx)</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Modal: ประวัติชุดเบิก (Drafts) -->
+  <div id="modalDrafts" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-display font-bold text-slate-800 text-lg flex items-center gap-2">
+          <span>📋</span> ประวัติและแบบร่างชุดเบิก
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold close-modal">&times;</button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow space-y-3" id="draftsList">
+        <!-- Drafts populated via JS -->
+      </div>
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 text-right">
+        <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg close-modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: รายชื่อร้านค้า (Vendors) -->
+  <div id="modalVendors" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-display font-bold text-slate-800 text-lg flex items-center gap-2">
+          <span>🏪</span> รายชื่อร้านค้าที่บันทึกไว้ในระบบ
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold close-modal">&times;</button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow space-y-3" id="vendorsList">
+        <!-- Vendors populated via JS -->
+      </div>
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 text-right">
+        <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg close-modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Preview -->
+  <div id="modalPreview" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-display font-bold text-slate-800 text-lg flex items-center gap-2">
+          <span>👁️</span> สรุปข้อมูลเอกสารชุดเบิก 6 หน้า
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold close-modal">&times;</button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow space-y-4 text-sm" id="previewContent">
+        <!-- Preview info populated via JS -->
+      </div>
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-between items-center">
+        <span class="text-xs text-slate-500">ตรวจสอบความถูกต้องก่อน Export</span>
+        <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg close-modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center text-white space-y-4 hidden">
+    <div class="w-12 h-12 border-4 border-white/20 border-t-brand-500 rounded-full animate-spin"></div>
+    <div class="text-center font-display">
+      <h4 class="text-lg font-bold" id="loadingTitle">กำลังสร้างเอกสาร Word...</h4>
+      <p class="text-xs text-slate-300" id="loadingSubtitle">จัดหน้ากระดาษ ตราครุฑ และตารางครบทั้ง 6 หน้า</p>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+    ศูนย์การศึกษาพิเศษ ประจำจังหวัดสุโขทัย • ระบบงานพัสดุและงบประมาณ (สร้างชุดเบิก Word .docx)
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

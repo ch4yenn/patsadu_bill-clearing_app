@@ -1,0 +1,237 @@
+[
+  {
+    "doc_type": "hire",
+    "approver_type": "director",
+    "department": "กลุ่มบริหารวิชาการ",
+    "project_name": "ติดประชาสัมพันธ์การรับสมัครนักเรียน",
+    "hire_job_name": "ทำป้ายไวนิลรับสมัครนักเรียน",
+    "doc1_date": "5 พฤษภาคม 2569",
+    "doc1_no": "3333",
+    "doc2_date": "6 พฤษภาคม 2569",
+    "doc2_no": "3334",
+    "po_no": "888/2569",
+    "po_date": "6 พฤษภาคม 2569",
+    "delivery_days": "5",
+    "delivery_due_date": "13 พฤษภาคม 2569",
+    "delivery_actual_date": "12 พฤษภาคม 2569",
+    "doc3_date": "15 พฤษภาคม 2569",
+    "doc3_no": "3335",
+    "vendor": {
+      "name": "ร้านอีสแอนด์ดี ดีไซน์",
+      "tax_id": "1640100071271",
+      "phone": "095-6639228",
+      "address": "เลขที่ 27/3 หมู่ 2",
+      "subdistrict": "ปากพระ",
+      "district": "เมืองสุโขทัย",
+      "province": "สุโขทัย",
+      "zipcode": "64000",
+      "signer_name": "นายธนพล  กันเหม็น",
+      "signer_position": "ผู้รับจ้าง"
+    },
+    "receipt": {
+      "type": "ใบส่งของ",
+      "book_no": "36",
+      "no": "273",
+      "date": "12 พฤษภาคม 2569"
+    },
+    "committee": [
+      {
+        "name": "นางสาวช่อทิพย์ มงคลธวัช",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวปราณีย์ รักเมืองไพร",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวภาณุมาศ ขัดนาค",
+        "position": "ครูชำนาญการ"
+      }
+    ],
+    "officers": {
+      "officer_supplies": "นายภาณุพงศ์  อัมพรภาค",
+      "head_supplies": "อดิศักดิ์  บัวดี",
+      "finance_officer": "นางสาวอังคณา  เสถียรดี"
+    },
+    "items": [
+      {
+        "name": "ก",
+        "qty": 1,
+        "unit": "ชุด",
+        "price_per_unit": 111,
+        "total_price": 111
+      },
+      {
+        "name": "ข",
+        "qty": 1,
+        "unit": "รายการ",
+        "price_per_unit": 222,
+        "total_price": 222
+      },
+      {
+        "name": "ค",
+        "qty": 1,
+        "unit": "รายการ",
+        "price_per_unit": 333,
+        "total_price": 333
+      }
+    ],
+    "has_vat": true,
+    "has_withholding_tax": true,
+    "fine_amount": 49.95,
+    "id": "draft_1789547158274",
+    "updated_at": "2026-09-16 15:25:58"
+  },
+  {
+    "doc_type": "hire",
+    "approver_type": "director",
+    "department": "กลุ่มบริหารทั่วไป",
+    "project_name": "ประชาสัมพันธ์การดำเนินงานของศูนย์การศึกษาพิเศษ ประจำจังหวัดสุโขทัย",
+    "hire_job_name": "ทำป้ายไวนิล",
+    "doc1_date": "24  สิงหาคม 2569",
+    "doc1_no": "3000",
+    "doc2_date": "25 สิงหาคม 2569",
+    "doc2_no": "3001",
+    "po_no": "101/2569",
+    "po_date": "25 สิงหาคม 2569",
+    "delivery_days": "7",
+    "delivery_due_date": "1 กันยายน 2569",
+    "delivery_actual_date": "31 กันยายน 2569",
+    "doc3_date": "2 กันยายน 2569",
+    "doc3_no": "3002",
+    "vendor": {
+      "name": "ร้านจอมอ",
+      "tax_id": "1640600079018",
+      "phone": "-",
+      "address": "เลขที่ 124 หมู่ 2",
+      "subdistrict": "กลางดง",
+      "district": "ทุ่งเสลี่ยม",
+      "province": "สุโขทัย",
+      "zipcode": "64150",
+      "signer_name": "นางสาวอรทัย  สุขสถิตย์",
+      "signer_position": "ผู้รับจ้าง"
+    },
+    "receipt": {
+      "type": "ใบสำคัญรับเงิน",
+      "book_no": "9",
+      "no": "999",
+      "date": "31 กันยายน 2569"
+    },
+    "committee": [
+      {
+        "name": "นายอานนท์  เขียวแก้ว",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวธัญลักษณ์  มาลัย",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวโสรยา  อินพรม",
+        "position": "ครู"
+      }
+    ],
+    "officers": {
+      "officer_supplies": "นายภาณุพงศ์  อัมพรภาค",
+      "head_supplies": "ว่าที่ร้อยตรี อดิศักดิ์  บัวดี",
+      "finance_officer": "นางสาวอังคณา  เสถียรดี"
+    },
+    "items": [
+      {
+        "name": "ป้ายไวนิล 1*3 เมตร",
+        "qty": 1,
+        "unit": "ป้าย",
+        "price_per_unit": 450,
+        "total_price": 450
+      },
+      {
+        "name": "ป้ายไวนิล 1*5 เมตร",
+        "qty": 1,
+        "unit": "ป้าย",
+        "price_per_unit": 650,
+        "total_price": 650
+      }
+    ],
+    "has_vat": false,
+    "has_withholding_tax": false,
+    "fine_amount": 0,
+    "id": "draft_1789544440842",
+    "updated_at": "2026-09-16 14:40:40"
+  },
+  {
+    "doc_type": "hire",
+    "approver_type": "director",
+    "department": "กลุ่มบริหารทั่วไป",
+    "project_name": "ประชาสัมพันธ์การดำเนินงานของศูนย์การศึกษาพิเศษ ประจำจังหวัดสุโขทัย",
+    "hire_job_name": "ทำป้ายไวนิล",
+    "doc1_date": "24  สิงหาคม 2569",
+    "doc1_no": "3000",
+    "doc2_date": "25 สิงหาคม 2569",
+    "doc2_no": "3001",
+    "po_no": "101/2569",
+    "po_date": "25 สิงหาคม 2569",
+    "delivery_days": "7",
+    "delivery_due_date": "1 กันยายน 2569",
+    "delivery_actual_date": "31 กันยายน 2569",
+    "doc3_date": "2 กันยายน 2569",
+    "doc3_no": "3002",
+    "vendor": {
+      "name": "ร้านจอมอ",
+      "tax_id": "1640600079018",
+      "phone": "-",
+      "address": "เลขที่ 124 หมู่ 2",
+      "subdistrict": "กลางดง",
+      "district": "ทุ่งเสลี่ยม",
+      "province": "สุโขทัย",
+      "zipcode": "64150",
+      "signer_name": "นางสาวอรทัย  สุขสถิตย์",
+      "signer_position": "ผู้รับจ้าง"
+    },
+    "receipt": {
+      "type": "ใบสำคัญรับเงิน",
+      "book_no": "9",
+      "no": "999",
+      "date": "31 กันยายน 2569"
+    },
+    "committee": [
+      {
+        "name": "นายอานนท์  เขียวแก้ว",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวธัญลักษณ์  มาลัย",
+        "position": "ครูชำนาญการ"
+      },
+      {
+        "name": "นางสาวโสรยา  อินพรม",
+        "position": "ครู"
+      }
+    ],
+    "officers": {
+      "officer_supplies": "นายภาณุพงศ์  อัมพรภาค",
+      "head_supplies": "ว่าที่ร้อยตรี อดิศักดิ์  บัวดี",
+      "finance_officer": "นางสาวอังคณา  เสถียรดี"
+    },
+    "items": [
+      {
+        "name": "ป้ายไวนิล 1*3 เมตร",
+        "qty": 1,
+        "unit": "ป้าย",
+        "price_per_unit": 450,
+        "total_price": 450
+      },
+      {
+        "name": "ป้ายไวนิล 1*5 เมตร",
+        "qty": 1,
+        "unit": "ป้าย",
+        "price_per_unit": 650,
+        "total_price": 650
+      }
+    ],
+    "has_vat": false,
+    "has_withholding_tax": false,
+    "fine_amount": 0,
+    "id": "draft_1789544434783",
+    "updated_at": "2026-09-16 14:40:34"
+  }
+]
