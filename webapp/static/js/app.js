@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target.value === 'director') {
         headSuppliesInput.value = 'อดิศักดิ์  บัวดี';
       } else {
-        headSuppliesInput.value = 'สมพร  บุญยัง';
+        headSuppliesInput.value = 'นางสาวจันจิรา  น่วมนวล';
       }
     });
   });
@@ -1562,44 +1562,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Allow user to select save destination via File System Access API
-      let savedViaPicker = false;
-      if (window.showSaveFilePicker) {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: filename,
-            types: [{
-              description: 'Microsoft Word Document (*.docx)',
-              accept: {
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
-              }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(blob);
-          await writable.close();
-          savedViaPicker = true;
-          showToast(`บันทึกไฟล์เรียบร้อยที่: ${handle.name}`, 'success', 5000);
-        } catch (pickerErr) {
-          if (pickerErr.name === 'AbortError') {
-            showToast('ยกเลิกการบันทึกไฟล์', 'info');
-            return;
-          }
-          console.warn('File picker error, falling back to download:', pickerErr);
-        }
-      }
+      // Standard browser download
+      // Ensures the file registers in Chrome's Download Manager (Ctrl + J) and top-right download bubble
+      const blobUrl = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
 
-      if (!savedViaPicker) {
-        const blobUrl = window.URL.createObjectURL(blob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = blobUrl;
-        downloadLink.download = filename;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-        window.URL.revokeObjectURL(blobUrl);
-        showToast(`ส่งออกไฟล์สำเร็จ: ${filename}`, 'success', 5000);
-      }
+      showToast(`📥 ดาวน์โหลดสำเร็จ: <b>${escapeHtml(filename)}</b><br><span class="text-xs text-slate-600 font-normal mt-0.5 block">กด <b>Ctrl + J</b> ใน Chrome หรือคลิกไอคอนดาวน์โหลดมุมขวาบนเพื่อ "แสดงในโฟลเดอร์" ได้ทันที</span>`, 'success', 8000);
 
       // Auto-save to draft history
       try {

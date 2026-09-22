@@ -1,5 +1,95 @@
 [
   {
+    "doc_type": "buy",
+    "approver_type": "director",
+    "department": "หน่วยบริการกงไกรลาศ",
+    "project_name": "รับส่งนักเรียน",
+    "hire_job_name": "",
+    "doc1_date": "17 กันยายน 2569",
+    "doc1_no": "111",
+    "doc2_date": "18 กันยายน 2569",
+    "doc2_no": "112",
+    "po_date": "18 กันยายน 2569",
+    "po_no": "121/2024",
+    "delivery_days": "5",
+    "delivery_due_date": "23 กันยายน 2569",
+    "delivery_actual_date": "23 กันยายน 2569",
+    "doc3_date": "25 กันยายน 2569",
+    "doc3_no": "113",
+    "vendor": {
+      "name": "ไม้เอกสกรีนแอนดีไซด์",
+      "tax_id": "3640300400828",
+      "phone": "-",
+      "address": "เลขที่ 130/7 หมู่ -",
+      "province": "ลพบุรี",
+      "district": "บ้านหมี่",
+      "subdistrict": "บางกะพี้",
+      "zipcode": "15110",
+      "signer_name": "นายธนา  ยอดพรม",
+      "signer_position": "ผู้รับจ้าง"
+    },
+    "receipt": {
+      "type": "ใบเสร็จรับเงิน",
+      "book_no": "8",
+      "no": "888",
+      "date": "23 กันยายน 2569"
+    },
+    "committee": [
+      {
+        "name": "นายอานนท์  เขียวแก้ว",
+        "position": "ครู"
+      },
+      {
+        "name": "นางสาวธัญลักษณ์  มาลัย",
+        "position": "ครู"
+      },
+      {
+        "name": "นางสาวโสรยา  อินพรม",
+        "position": "ครู"
+      }
+    ],
+    "officers": {
+      "officer_supplies": "นายสุทธิพงษ์ แก้วจินดา",
+      "head_supplies": "นางวัชราภรณ์ ปะสะจัน",
+      "finance_officer": "นางวิมลมาส เชื้อคำ"
+    },
+    "items": [
+      {
+        "name": "อุปกรณ์ทำความสะอาดและน้ำยาล้างมือ",
+        "qty": 1,
+        "unit": "ชุด",
+        "price_per_unit": 1700,
+        "total_price": 1700
+      },
+      {
+        "name": "กด",
+        "qty": 1,
+        "unit": "รายการ",
+        "price_per_unit": 1400,
+        "total_price": 1400
+      },
+      {
+        "name": "ดดหด",
+        "qty": 1,
+        "unit": "รายการ",
+        "price_per_unit": 3000,
+        "total_price": 3000
+      },
+      {
+        "name": "กดำเอห",
+        "qty": 1,
+        "unit": "อย่าง",
+        "price_per_unit": 88888,
+        "total_price": 88888
+      }
+    ],
+    "has_vat": true,
+    "has_withholding_tax": true,
+    "fine_amount": 6,
+    "id": "draft_1789616889387",
+    "updated_at": "2026-09-17 10:48:09"
+  },
+  {
     "doc_type": "hire",
     "approver_type": "director",
     "department": "กลุ่มบริหารวิชาการ",
