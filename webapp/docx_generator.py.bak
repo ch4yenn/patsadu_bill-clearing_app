@@ -454,40 +454,6 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
     
     apply_tag_replacements(doc, mapping)
     
-    # --- Disable proofing (spelling/grammar lines) dynamically ---
-    from docx.oxml import OxmlElement
-    from docx.oxml.ns import qn
-    
-    # 1. Add <w:noProof/> to every run in the document
-    for p in doc.paragraphs:
-        for r in p.runs:
-            rPr = r._r.get_or_add_rPr()
-            if rPr.find(qn('w:noProof')) is None:
-                rPr.append(OxmlElement('w:noProof'))
-                
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for p in cell.paragraphs:
-                    for r in p.runs:
-                        rPr = r._r.get_or_add_rPr()
-                        if rPr.find(qn('w:noProof')) is None:
-                            rPr.append(OxmlElement('w:noProof'))
-
-    # 2. Add document-level settings to hide errors
-    settings = doc.settings.element
-    for tag in ['w:hideSpellingErrors', 'w:hideGrammaticalErrors']:
-        if settings.find(qn(tag)) is None:
-            settings.append(OxmlElement(tag))
-            
-    proofState = settings.find(qn('w:proofState'))
-    if proofState is None:
-        proofState = OxmlElement('w:proofState')
-        settings.append(proofState)
-    proofState.set(qn('w:spelling'), 'clean')
-    proofState.set(qn('w:grammar'), 'clean')
-    # -----------------------------------------------------------
-    
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     doc.save(output_path)
     return output_path
