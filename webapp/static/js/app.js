@@ -1514,6 +1514,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const taxIdInput = document.getElementById('vendor_tax_id');
+    const taxId = (taxIdInput.value || '').trim();
+    if (taxId.length !== 13 || !/^\d{13}$/.test(taxId)) {
+      showToast('กรุณากรอกเลขประจำตัวผู้เสียภาษีให้ครบ 13 หลัก และเป็นตัวเลขเท่านั้น', 'warning');
+      taxIdInput.focus();
+      return;
+    }
+
     const payload = collectFormData();
 
     try {

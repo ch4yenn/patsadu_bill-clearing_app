@@ -267,7 +267,8 @@ def export_docx():
         def sanitize_name(name: str) -> str:
             # Strip illegal filename characters: \ / : * ? " < > |
             cleaned = "".join(c for c in name if c not in '\\/:*?"<>|\r\n\t').strip()
-            return cleaned[:50]
+            # Limit to 30 chars (Thai chars are 3 bytes, 30 chars = max 90 bytes) to stay under 255 bytes OS limit
+            return cleaned[:30]
             
         safe_reason = sanitize_name(reason)
         safe_vendor = sanitize_name(vendor_name)
