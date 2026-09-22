@@ -5,19 +5,36 @@ import re
 import copy
 from docx.oxml.ns import qn
 
-# Add path for bahttext
-sys.path.insert(0, r'g:\My Drive\back up window\__ศกศ.สท\__งบประมาน\_พัสดุ\_ล้างมือ\procurement-web-app')
+# Dynamic path resolution (supports Windows local and Linux cloud like Render)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+
+for p in [PARENT_DIR, CURRENT_DIR]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
 from webapp.bahttext import baht_text
 
-BASE_DIR = r'g:\My Drive\back up window\__ศกศ.สท\__งบประมาน\_พัสดุ\_ล้างมือ\procurement-web-app'
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates_master")
+# Candidate directories for templates_master
+CANDIDATE_DIRS = [
+    os.path.join(PARENT_DIR, "templates_master"),
+    os.path.join(CURRENT_DIR, "templates_master"),
+    os.path.join(os.getcwd(), "templates_master"),
+    os.path.join(os.getcwd(), "procurement-web-app", "templates_master"),
+]
 
 def get_template_path(doc_type: str, approver_type: str) -> str:
     if doc_type == "buy":
         fname = "Form_buy_director.docx" if approver_type == "director" else "Form_buy_deputy.docx"
     else:
         fname = "Form_hire_director.docx" if approver_type == "director" else "Form_hire_deputy.docx"
-    return os.path.join(TEMPLATES_DIR, fname)
+        
+    for d in CANDIDATE_DIRS:
+        candidate = os.path.join(d, fname)
+        if os.path.exists(candidate):
+            return candidate
+            
+    return os.path.join(PARENT_DIR, "templates_master", fname)
 
 def format_money(val) -> str:
     try:
