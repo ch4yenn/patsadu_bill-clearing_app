@@ -263,7 +263,7 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
     doc = docx.Document(template_file)
     
     # 1. Basic Fields
-    dept = str(data.get("department", "กลุ่มบริหารทั่วไป")).strip()
+    dept = str(data.get("department", "ฝ่ายบริหารทั่วไป")).strip()
     project_name = str(data.get("project_name", "")).strip()
     hire_job_name = str(data.get("hire_job_name", "ทำป้ายไวนิล")).strip()
     items = data.get("items", [])
