@@ -1,7 +1,7 @@
 import os
 import sys
-import re
 import copy
+import re
 import docx
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -27,37 +27,6 @@ CANDIDATE_DIRS = [
 ]
 
 FONT_NAME = "TH SarabunIT๙"
-
-def configure_proofing_settings(doc):
-    """Ensure Microsoft Word hides spelling/grammar squiggly lines and treats document as clean"""
-    try:
-        settings = doc.settings.element
-        ref_elem = settings.find(qn('w:defaultTabStop'))
-        
-        if settings.find(qn('w:hideSpellingErrors')) is None:
-            hide_spell = docx.oxml.OxmlElement('w:hideSpellingErrors')
-            if ref_elem is not None:
-                ref_elem.addprevious(hide_spell)
-            else:
-                settings.append(hide_spell)
-                
-        if settings.find(qn('w:hideGrammaticalErrors')) is None:
-            hide_gram = docx.oxml.OxmlElement('w:hideGrammaticalErrors')
-            if ref_elem is not None:
-                ref_elem.addprevious(hide_gram)
-            else:
-                settings.append(hide_gram)
-                
-        if settings.find(qn('w:proofState')) is None:
-            proof_state = docx.oxml.OxmlElement('w:proofState')
-            proof_state.set(qn('w:spelling'), 'clean')
-            proof_state.set(qn('w:grammar'), 'clean')
-            if ref_elem is not None:
-                ref_elem.addprevious(proof_state)
-            else:
-                settings.append(proof_state)
-    except Exception:
-        pass
 
 def get_template_path(doc_type: str, approver_type: str) -> str:
     if doc_type == "buy":
@@ -156,22 +125,6 @@ def replace_text_in_paragraph(p, old_text, new_text, start_search=0):
             p.runs[i].text = ""
         p.runs[end_run].text = p.runs[end_run].text[end_offset:]
         
-    # Apply standard font TH SarabunIT๙, strip red color, and suppress proofing/spelling squiggly line
-    target_run = p.runs[start_run]
-    rPr = target_run._r.get_or_add_rPr()
-    color = rPr.find(qn('w:color'))
-    if color is not None:
-        rPr.remove(color)
-    rFonts = rPr.find(qn('w:rFonts'))
-    if rFonts is None:
-        rFonts = docx.oxml.OxmlElement('w:rFonts')
-        rPr.append(rFonts)
-    rFonts.set(qn('w:ascii'), FONT_NAME)
-    rFonts.set(qn('w:hAnsi'), FONT_NAME)
-    rFonts.set(qn('w:cs'), FONT_NAME)
-    target_run.font.name = FONT_NAME
-    rPr.get_or_add_noProof()
-    
     return start_idx + len(new_str)
 
 def set_cell_formatted_text(cell, text, align=None, bold=False, font_name=FONT_NAME, font_size=16):
@@ -184,9 +137,6 @@ def set_cell_formatted_text(cell, text, align=None, bold=False, font_name=FONT_N
         r.font.name = font_name
         r.font.size = Pt(font_size)
         rPr = r._r.get_or_add_rPr()
-        color = rPr.find(qn('w:color'))
-        if color is not None:
-            rPr.remove(color)
         rFonts = rPr.find(qn('w:rFonts'))
         if rFonts is None:
             rFonts = docx.oxml.OxmlElement('w:rFonts')
@@ -194,15 +144,13 @@ def set_cell_formatted_text(cell, text, align=None, bold=False, font_name=FONT_N
         rFonts.set(qn('w:ascii'), font_name)
         rFonts.set(qn('w:hAnsi'), font_name)
         rFonts.set(qn('w:cs'), font_name)
-        rPr.get_or_add_noProof()
 
 def populate_table_0(table, items, total_amount, baht_text_str):
     num_items = len(items)
     total_rows = len(table.rows)
     total_row_idx = total_rows - 1
-    template_item_rows_count = total_rows - 3 # rows 0,1 header, last row total
+    template_item_rows_count = total_rows - 3
     
-    # Trim excess dummy rows
     if num_items < template_item_rows_count:
         for r_idx in range(total_row_idx - 1, 1 + num_items, -1):
             tr = table.rows[r_idx]._tr
@@ -214,7 +162,6 @@ def populate_table_0(table, items, total_amount, baht_text_str):
             new_tr = copy.deepcopy(sample_tr)
             last_tr.addprevious(new_tr)
             
-    # Populate items
     for idx, item in enumerate(items):
         row = table.rows[2 + idx]
         qty_unit = f"{item.get('qty', '')} {item.get('unit', '')}".strip()
@@ -231,7 +178,6 @@ def populate_table_0(table, items, total_amount, baht_text_str):
         set_cell_formatted_text(row.cells[7], tot_b, WD_ALIGN_PARAGRAPH.RIGHT, bold=False)
         set_cell_formatted_text(row.cells[8], tot_s, WD_ALIGN_PARAGRAPH.RIGHT, bold=False)
         
-    # Update total row
     last_row = table.rows[-1]
     tot_b, tot_s = split_baht_satang(total_amount)
     set_cell_formatted_text(last_row.cells[0], f"รวมเป็นเงินทั้งสิ้น  ({baht_text_str})", WD_ALIGN_PARAGRAPH.CENTER, bold=False)
@@ -241,7 +187,7 @@ def populate_table_0(table, items, total_amount, baht_text_str):
 def populate_table_1(table, items, financial, baht_text_str):
     num_items = len(items)
     total_rows = len(table.rows)
-    template_item_rows_count = total_rows - 4 # row 0 header + 3 summary rows
+    template_item_rows_count = total_rows - 4
     
     if num_items < template_item_rows_count:
         for r_idx in range(total_rows - 4, num_items, -1):
@@ -285,8 +231,6 @@ def populate_table_1(table, items, financial, baht_text_str):
 
 def apply_tag_replacements(doc, mapping: dict):
     sorted_tags = sorted(mapping.keys(), key=len, reverse=True)
-    
-    # 1. Paragraphs
     for p in doc.paragraphs:
         if '{{' in p.text:
             for tag in sorted_tags:
@@ -296,7 +240,6 @@ def apply_tag_replacements(doc, mapping: dict):
                     if pos == -1:
                         break
                         
-    # 2. Table cells
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
@@ -319,14 +262,12 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
         
     doc = docx.Document(template_file)
     
-    # 1. Basic Fields
     dept = str(data.get("department", "ฝ่ายบริหารทั่วไป")).strip()
     project_name = str(data.get("project_name", "")).strip()
     hire_job_name = str(data.get("hire_job_name", "ทำป้ายไวนิล")).strip()
     items = data.get("items", [])
     num_items = len(items)
     
-    # 2. Financial calculation
     total_amount = sum(float(item.get("total_price", 0)) for item in items)
     has_vat = data.get("has_vat", False)
     if has_vat:
@@ -356,7 +297,6 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
         "net_pay": net_pay
     }
     
-    # 3. Dates & Numbers
     doc1_no = clean_doc_no(data.get("doc1_no", ""))
     doc1_date = str(data.get("doc1_date", "")).strip()
     doc2_no = clean_doc_no(data.get("doc2_no", ""))
@@ -372,7 +312,6 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
     delivery_due_date = str(data.get("delivery_due_date", "")).strip()
     delivery_actual_date = str(data.get("delivery_actual_date", "")).strip()
     
-    # 4. Vendor
     vendor = data.get("vendor", {})
     vendor_name = str(vendor.get("name", "")).strip()
     vendor_tax = str(vendor.get("tax_id", "")).strip()
@@ -389,13 +328,11 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
     vendor_signer = str(vendor.get("signer_name", "")).strip()
     vendor_signer_pos = str(vendor.get("signer_position", "เจ้าของกิจการ")).strip()
     
-    # 5. Receipt
     receipt = data.get("receipt", {})
     receipt_type = str(receipt.get("type", "ใบเสร็จรับเงิน")).strip()
     receipt_book = str(receipt.get("book_no", "-")).strip()
     receipt_no = str(receipt.get("no", "-")).strip()
     
-    # 6. Committee
     committee = data.get("committee", [
         {"name": "นางสาวธัญญาภรณ์  สุกันทา", "position": "ครู"},
         {"name": "นางสาวกนกวรรณ  มีเทียม", "position": "ครู"},
@@ -404,74 +341,55 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
     while len(committee) < 3:
         committee.append({"name": "-", "position": "-"})
         
-    # 7. Officers
     officers = data.get("officers") or {}
     officer_supplies = clean_officer_name(officers.get("officer_supplies", "นางสาวกรรณิกา  พึ่งทอง"))
     head_supplies = clean_officer_name(officers.get("head_supplies", "นางสาวธิดาภรณ์  คงชนะ"))
     finance_officer = clean_officer_name(officers.get("finance_officer", "นายสุรพล  คงยืน"))
     
-    # -------------------------------------------------------------
-    # 1. Populate Tables First
-    # -------------------------------------------------------------
     if len(doc.tables) > 0:
         populate_table_0(doc.tables[0], items, total_amount, baht_text_total)
         
     if len(doc.tables) > 1:
         populate_table_1(doc.tables[1], items, financial, baht_text_total)
         
-    # -------------------------------------------------------------
-    # 2. Build Tag Mapping
-    # -------------------------------------------------------------
     tot_b, tot_s = split_baht_satang(total_amount)
     goods_b, goods_s = split_baht_satang(goods_value)
     net_b, net_s = split_baht_satang(net_pay)
     
     mapping = {
-        "{{กลุ่มงาน / ฝ่าย / หน่วยบริการผู้ขอ}}": dept,
-        "{{กลุ่มงาน / ฝ่าย / หน่วยบริการ}}": dept,
-        "{{กลุ่มงาน / ฝ่าย}}": dept,
-        "{{กลุ่มงาน/ฝ่าย}}": dept,
-        "{{ชื่องานซื้อ}}": project_name,
-        "{{ชื่องานจ้าง}}": hire_job_name,
-        "{{รายการพัสดุ}}": project_name if doc_type == "buy" else hire_job_name,
-        "{{จำนวนรายการ}}": str(num_items),
-        "{{จำนวนเงินรวม}}": format_money(total_amount),
-        "{{ราคา}}": format_money(total_amount),
+        # 1. Master Template Actual Tags (Exact matches in Form_*.docx)
+        "{{ปีที่ขอ}}": year_req,
+        "{{ฝ่ายงาน/ผู้ขอ}}": dept,
+        "{{เหตุผลความจำเป็น}}": project_name if doc_type == "buy" else hire_job_name,
+        "{{จำนวนของที่ซื้อ}}": str(num_items),
+        "{{จำนวนรายการจ้าง}}": str(num_items),
+        "{{ชื่องานที่จะจ้าง}}": hire_job_name,
+        "{{ราคา}}": tot_b,
         "{{ราคา.00}}": format_money(total_amount),
-        "{{ราคารวม}}": format_money(total_amount),
-        "{{ราคากลาง}}": format_money(total_amount),
-        "{{ราคาบาท}}": tot_b,
-        "{{ราคาสตางค์}}": tot_s,
+        "{{ราคาจริง.00}}": format_money(goods_value),
+        "{{ภาษี.00}}": format_money(vat) if has_vat else "-",
+        "{{หักภาษี.00}}": format_money(withholding_tax) if has_wht else "-",
+        "{{ค่าปรับ.00}}": format_money(fine) if fine > 0 else "-",
+        "{{ราคาจ่ายจริง.00}}": format_money(net_pay),
         "{{Bath text}}": baht_text_total,
-        "{{bath text}}": baht_text_total,
-        "{{ตัวหนังสือ}}": baht_text_total,
-        "{{ภาษีมูลค่าเพิ่ม}}": format_money(vat) if has_vat else "-",
-        "{{ภาษี 1%}}": format_money(withholding_tax) if has_wht else "-",
-        "{{ค่าปรับ}}": format_money(fine) if fine > 0 else "-",
-        "{{จำนวนเงินหักภาษี}}": format_money(net_pay),
-        "{{สุทธิบาท}}": net_b,
-        "{{สุทธิต่าง}}": net_s,
-        "{{สุทธิต่างค์}}": net_s,
-        "{{Bath text สุทธิ}}": baht_text_net,
-        "{{เลขที่ 1}}": doc1_no,
+        "{{Bath text จ่ายจริง}}": baht_text_net,
+        "{{กำหนดส่ง}}": delivery_days,
+        "{{วันครบกำหนดส่งมอบตามใบสั่ง}}": delivery_due_date,
         "{{วันที่บันทึกรายงานขอ}}": doc1_date,
-        "{{เลขที่ 2}}": doc2_no,
-        "{{วันที่รายงานผล}}": doc2_date,
-        "{{เลขที่ 3}}": doc3_no,
-        "{{วันที่บันทึกตรวจรับ}}": doc3_date,
-        "{{ปีงบ}}": year_req,
+        "{{เลขที่1}}": doc1_no,
+        "{{วันที่อนุมัติสั่ง}}": doc2_date,
+        "{{เลขที่2}}": doc2_no,
+        "{{วันที่ใบสั่งซื้อ}}": po_date,
         "{{เลขที่ใบสั่งซื้อ}}": po_no,
+        "{{วันที่ใบสั่งจ้าง}}": po_date,
         "{{เลขที่ใบสั่งจ้าง}}": po_no,
-        "{{วันที่สั่งซื้อ}}": po_date,
-        "{{วันที่สั่งจ้าง}}": po_date,
-        "{{กำหนดส่งมอบวัน}}": delivery_days,
-        "{{วันที่ครบกำหนด}}": delivery_due_date,
-        "{{วันที่ส่งมอบของจริง}}": delivery_actual_date,
-        "{{ชื่อร้านค้า/ผู้รับจ้าง/ผู้ขาย}}": vendor_name,
-        "{{ชื่อร้านค้า}}": vendor_name,
-        "{{เลขผู้เสียภาษี}}": vendor_tax,
-        "{{บ้านเลขที่}}": vendor_house,
-        "{{หมู่}}": vendor_moo,
+        "{{วันที่ตรวจรับงาน}}": delivery_actual_date,
+        "{{วันที่บันทึกขออนุมัติจ่ายเงิน}}": doc3_date,
+        "{{เลขที่3}}": doc3_no,
+        "{{ชื่อร้านค้า/บริษัท}}": vendor_name,
+        "{{เลขประจำตัวผู้เสียภาษี}}": vendor_tax,
+        "{{เลขที่ร้าน}}": vendor_house,
+        "{{หมู่ร้าน}}": vendor_moo,
         "{{ตำบล}}": vendor_subdist,
         "{{อำเภอ}}": vendor_dist,
         "{{จังหวัด}}": vendor_prov,
@@ -491,61 +409,50 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
         "{{เจ้าหน้าที่พัสดุ}}": officer_supplies,
         "{{หัวหน้าเจ้าหน้าที่พัสดุ}}": head_supplies,
         "{{เจ้าหน้าที่การเงิน}}": finance_officer,
+        
+        # 2. Compatibility aliases
+        "{{กลุ่มงาน / ฝ่าย / หน่วยบริการผู้ขอ}}": dept,
+        "{{กลุ่มงาน / ฝ่าย / หน่วยบริการ}}": dept,
+        "{{กลุ่มงาน / ฝ่าย}}": dept,
+        "{{กลุ่มงาน/ฝ่าย}}": dept,
+        "{{ชื่องานซื้อ}}": project_name,
+        "{{ชื่องานจ้าง}}": hire_job_name,
+        "{{รายการพัสดุ}}": project_name if doc_type == "buy" else hire_job_name,
+        "{{จำนวนรายการ}}": str(num_items),
+        "{{จำนวนเงินรวม}}": format_money(total_amount),
+        "{{ราคารวม}}": format_money(total_amount),
+        "{{ราคากลาง}}": format_money(total_amount),
+        "{{ราคาบาท}}": tot_b,
+        "{{ราคาสตางค์}}": tot_s,
+        "{{bath text}}": baht_text_total,
+        "{{ตัวหนังสือ}}": baht_text_total,
+        "{{ภาษีมูลค่าเพิ่ม}}": format_money(vat) if has_vat else "-",
+        "{{ภาษี 1%}}": format_money(withholding_tax) if has_wht else "-",
+        "{{ค่าปรับ}}": format_money(fine) if fine > 0 else "-",
+        "{{จำนวนเงินหักภาษี}}": format_money(net_pay),
+        "{{สุทธิบาท}}": net_b,
+        "{{สุทธิต่าง}}": net_s,
+        "{{สุทธิต่างค์}}": net_s,
+        "{{Bath text สุทธิ}}": baht_text_net,
+        "{{เลขที่ 1}}": doc1_no,
+        "{{เลขที่ 2}}": doc2_no,
+        "{{เลขที่ 3}}": doc3_no,
+        "{{ปีงบ}}": year_req,
+        "{{วันที่สั่งซื้อ}}": po_date,
+        "{{วันที่สั่งจ้าง}}": po_date,
+        "{{กำหนดส่งมอบวัน}}": delivery_days,
+        "{{วันที่ครบกำหนด}}": delivery_due_date,
+        "{{วันที่ส่งมอบของจริง}}": delivery_actual_date,
+        "{{ชื่อร้านค้า/ผู้รับจ้าง/ผู้ขาย}}": vendor_name,
+        "{{ชื่อร้านค้า}}": vendor_name,
+        "{{เลขผู้เสียภาษี}}": vendor_tax,
+        "{{บ้านเลขที่}}": vendor_house,
+        "{{หมู่}}": vendor_moo,
+        "{{วันที่รายงานผล}}": doc2_date,
+        "{{วันที่บันทึกตรวจรับ}}": doc3_date,
     }
     
-    # -------------------------------------------------------------
-    # 3. Apply Replacements
-    # -------------------------------------------------------------
     apply_tag_replacements(doc, mapping)
-    
-    # -------------------------------------------------------------
-    # 4. Final Cleanup & Proofing Protection
-    # -------------------------------------------------------------
-    # A. Remove leftover red color markers
-    for p in doc.paragraphs:
-        for r in p.runs:
-            c = r._r.find(qn('w:rPr'))
-            if c is not None:
-                col = c.find(qn('w:color'))
-                if col is not None and col.attrib.get(qn('w:val'), '').upper() in ['EE0000', 'FF0000', 'RED']:
-                    c.remove(col)
-    for t in doc.tables:
-        for row in t.rows:
-            for cell in row.cells:
-                for p in cell.paragraphs:
-                    for r in p.runs:
-                        c = r._r.find(qn('w:rPr'))
-                        if c is not None:
-                            col = c.find(qn('w:color'))
-                            if col is not None and col.attrib.get(qn('w:val'), '').upper() in ['EE0000', 'FF0000', 'RED']:
-                                c.remove(col)
-                                
-    # B. Remove any proofErr elements
-    for pe in doc._element.xpath('.//w:proofErr'):
-        try:
-            pe.getparent().remove(pe)
-        except Exception:
-            pass
-            
-    # C. Configure document-level proofing settings to suppress spelling/grammar squiggly lines
-    configure_proofing_settings(doc)
-    
-    # D. Apply noProof to all runs
-    for p in doc.paragraphs:
-        for r in p.runs:
-            try:
-                r._r.get_or_add_rPr().get_or_add_noProof()
-            except Exception:
-                pass
-    for t in doc.tables:
-        for row in t.rows:
-            for cell in row.cells:
-                for p in cell.paragraphs:
-                    for r in p.runs:
-                        try:
-                            r._r.get_or_add_rPr().get_or_add_noProof()
-                        except Exception:
-                            pass
     
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     doc.save(output_path)
