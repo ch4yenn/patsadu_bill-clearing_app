@@ -360,7 +360,7 @@ def generate_procurement_doc(data: dict, output_path: str) -> str:
         # 1. Master Template Actual Tags (Exact matches in Form_*.docx)
         "{{ปีที่ขอ}}": year_req,
         "{{ฝ่ายงาน/ผู้ขอ}}": dept,
-        "{{เหตุผลความจำเป็น}}": project_name if doc_type == "buy" else hire_job_name,
+        "{{เหตุผลความจำเป็น}}": project_name,
         "{{จำนวนของที่ซื้อ}}": str(num_items),
         "{{จำนวนรายการจ้าง}}": str(num_items),
         "{{ชื่องานที่จะจ้าง}}": hire_job_name,
