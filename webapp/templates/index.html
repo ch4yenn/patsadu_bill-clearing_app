@@ -370,12 +370,13 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1">ประเภทเอกสารส่งมอบ</label>
-                <select id="receipt_type" name="receipt_type" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-brand-500">
-                  <option value="ใบเสร็จรับเงิน">ใบเสร็จรับเงิน</option>
-                  <option value="ใบสำคัญรับเงิน">ใบสำคัญรับเงิน</option>
-                  <option value="ใบส่งของ">ใบส่งของ</option>
-                  <option value="หนังสือส่งมอบ">หนังสือส่งมอบ</option>
-                </select>
+                <input list="receiptTypeList" id="receipt_type" name="receipt_type" value="ใบเสร็จรับเงิน" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500">
+                <datalist id="receiptTypeList">
+                  <option value="ใบเสร็จรับเงิน">
+                  <option value="ใบสำคัญรับเงิน">
+                  <option value="ใบส่งของ">
+                  <option value="หนังสือส่งมอบ">
+                </datalist>
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1">เล่มที่</label>
