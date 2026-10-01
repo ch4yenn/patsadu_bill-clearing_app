@@ -151,9 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Setup Staff Autocomplete Dropdown
     setupStaffAutocomplete();
 
-    // 4. Vendors
-    currentVendors = presets.vendors || [];
+    // 4. Vendors (Server + LocalStorage sync)
+    const localVendors = getVendorsFromLocalStorage();
+    const serverVendors = presets.vendors || [];
+    currentVendors = mergeVendors(serverVendors, localVendors);
+    saveVendorsToLocalStorage(currentVendors);
     renderVendorDropdown();
+    syncVendorsToServer(currentVendors, serverVendors);
 
     // 5. Initial Today's Date if empty
     const doc1DateInput = document.getElementById('doc1_date');
@@ -312,8 +316,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const LOCAL_STORAGE_VENDORS_KEY = 'procurement_saved_vendors_v2';
+
+  function saveVendorsToLocalStorage(vendors) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_VENDORS_KEY, JSON.stringify(vendors));
+    } catch (e) {
+      console.warn('Cannot save to localStorage:', e);
+    }
+  }
+
+  function getVendorsFromLocalStorage() {
+    try {
+      const data = localStorage.getItem(LOCAL_STORAGE_VENDORS_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.warn('Cannot read from localStorage:', e);
+      return [];
+    }
+  }
+
+  function mergeVendors(serverVendors, localVendors) {
+    const map = new Map();
+    (serverVendors || []).forEach(v => {
+      if (v && v.name && v.name.trim()) map.set(v.name.trim(), v);
+    });
+    (localVendors || []).forEach(v => {
+      if (v && v.name && v.name.trim()) {
+        const key = v.name.trim();
+        if (map.has(key)) {
+          const existing = map.get(key);
+          map.set(key, { ...existing, ...v });
+        } else {
+          map.set(key, v);
+        }
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'th'));
+  }
+
+  async function syncVendorsToServer(merged, server) {
+    const serverNames = new Set((server || []).map(v => v.name?.trim()));
+    const missingOnServer = merged.filter(v => v.name && !serverNames.has(v.name.trim()));
+    for (const vendor of missingOnServer) {
+      try {
+        await fetch('/api/vendors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(vendor)
+        });
+      } catch (err) {
+        console.warn('Failed to sync vendor to server:', vendor.name);
+      }
+    }
+  }
+
   function renderVendorDropdown() {
-    vendorSelect.innerHTML = '<option value="">-- เลือกร้านค้าที่บันทึกไว้ --</option>';
+    const countText = currentVendors.length > 0 ? ` (${currentVendors.length} ร้านค้า)` : '';
+    vendorSelect.innerHTML = `<option value="">-- เลือกร้านค้าที่บันทึกไว้${countText} --</option>`;
     currentVendors.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.name;
@@ -529,6 +589,13 @@ document.addEventListener('DOMContentLoaded', () => {
       signer_position: document.getElementById('vendor_signer_position').value.trim()
     };
 
+    // 1. Save locally to browser immediately (Guarantees data is never lost!)
+    currentVendors = mergeVendors(currentVendors, [vendorData]);
+    saveVendorsToLocalStorage(currentVendors);
+    renderVendorDropdown();
+    vendorSelect.value = name;
+
+    // 2. Sync to backend server
     try {
       const res = await fetch('/api/vendors', {
         method: 'POST',
@@ -537,16 +604,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const json = await res.json();
       if (json.status === 'success') {
-        currentVendors = json.data;
+        currentVendors = mergeVendors(json.data, currentVendors);
+        saveVendorsToLocalStorage(currentVendors);
         renderVendorDropdown();
         vendorSelect.value = name;
-        showToast(`บันทึกข้อมูลร้าน "${name}" ในระบบแล้ว`, 'success');
+        showToast(`บันทึกข้อมูลร้าน "${name}" ในระบบเรียบร้อย`, 'success');
       } else {
-        showToast(json.message || 'เกิดข้อผิดพลาดในการบันทึกร้าน', 'error');
+        showToast(`บันทึกในเครื่องแล้ว (${json.message || 'เซิร์ฟเวอร์ตอบสนองผิดพลาด'})`, 'warning');
       }
     } catch (err) {
       console.error(err);
-      showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+      showToast(`บันทึกข้อมูลร้าน "${name}" ในเบราว์เซอร์แล้ว (เซิร์ฟเวอร์ไม่ตอบสนอง)`, 'info');
     }
   });
 
